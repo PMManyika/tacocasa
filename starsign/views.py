@@ -21,7 +21,7 @@ def find_star(request):
             birth_date = form.cleaned_data.get("birth_date")
             mobile_number = form.cleaned_data.get("mobile_number")
 
-            # Check for AJAX request
+            # AJAX request for birth date submission
             if (
                 request.headers.get("X-Requested-With") == "XMLHttpRequest"
                 and birth_date
@@ -31,17 +31,8 @@ def find_star(request):
                 star_sign = user.get_zodiac_sign()
                 return JsonResponse({"success": True, "star_sign": star_sign})
 
-            # Normal POST request handling
-            if birth_date and not mobile_number:
-                user = User(birth_date=birth_date)
-                context["sign"] = user.get_zodiac_sign()
-                context["gift"] = get_random_gift()
-                request.session["sign"] = context["sign"]
-                request.session["gift"] = context["gift"]
-                request.session["birth_date"] = birth_date.strftime("%Y-%m-%d")
-                return render(request, "starsign/star.html", context)
-
-            elif mobile_number:
+            # Normal POST request handling for mobile number submission
+            if mobile_number:
                 sign = request.session.get("sign", "")
                 gift = request.session.get("gift", "")
                 if sign and gift:
@@ -53,19 +44,30 @@ def find_star(request):
                         User.objects.create(
                             birth_date=birth_date, mobile_number=mobile_number
                         )
+                        # Clear the session data
                         del request.session["birth_date"]
                         del request.session["sign"]
                         del request.session["gift"]
+                        # Redirect to a success page
                         return redirect("find_starsign_success", sign=sign, gift=gift)
                     else:
                         context["error"] = "Birth date missing. Please start again."
                         return render(request, "starsign/starsign.html", context)
                 else:
                     context["error"] = "Sign or gift missing. Please start again."
-                    return render(request, "starsign/star.html", context)
+                    return render(request, "starsign/starsign.html", context)
 
-    # If the form is not valid or it's a GET request
-    return render(request, "starsign/star.html", context)
+            # If only birth date is submitted, save the data and update the context
+            elif birth_date and not mobile_number:
+                user = User(birth_date=birth_date)
+                context["sign"] = user.get_zodiac_sign()
+                context["gift"] = get_random_gift()
+                request.session["sign"] = context["sign"]
+                request.session["gift"] = context["gift"]
+                request.session["birth_date"] = birth_date.strftime("%Y-%m-%d")
+
+        # If the form is not valid or it's a GET request
+        return render(request, "starsign/starsign.html", context)
 
 
 def find_starsign_success(request, sign, gift):
