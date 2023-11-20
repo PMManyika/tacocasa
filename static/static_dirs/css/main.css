@@ -1,0 +1,60 @@
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: black;
+}
+
+.banner {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('static/img/banner1.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center; /* Center the image */
+    color: white;
+}
+
+.container {
+    width: 90%; /* Adjust width for mobile */
+    max-width: 500px; /* Maximum width */
+    text-align: center;
+    background-color: #ffffff65; /* Semi-transparent white background */
+    padding: 20px; /* Add some padding */
+    border-radius: 10px; /* Round the corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    margin: 15px; /* Margin to avoid touching the edges */
+}
+
+/* Media query for larger screens */
+@media (min-width: 768px) {
+    .banner {
+        height: 100vh;
+    }
+
+    .container {
+        padding: 40px;
+        max-width: 500px;
+    }
+}
+
+.form-group h3, h1 {
+    background-color: #838383;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.result-container {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.result-container p {
+    background-color: #000;
+    padding: 20px;
+    border-radius: 10px;
+}

@@ -1,0 +1,10 @@
+{% extends 'starsign/base.html' %}      
+{% load static %}
+{% block content %}
+<div class="text-center mt-4">
+    <h1 class="text-warning">Congratulations!</h1>
+    <p class="lead">Your star sign is: <strong>{{ sign }}</strong></p>
+    <p class="lead">You have received a gift: <strong>{{ gift }}</strong></p>
+    <a href="{% url 'clear_session' %}" class="btn btn-warning mt-3">Go Back</a>
+</div>
+{% endblock %}

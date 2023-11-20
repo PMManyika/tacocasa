@@ -1,0 +1,82 @@
+{% extends 'starsign/base.html' %}      
+{% load static %}
+{% block content %}
+    <!-- Display the form for birth date submission -->
+    <div class="form-group">
+        <h1><p style="color: #ffa500">FAN ZONE</p> Find Your Star Sign and Get a Gift</h1>
+        <hr>
+        <form method="post" id="birth_date_form">
+            {% csrf_token %}
+            <div class="form-group" id="birth_date_input">
+            <p style="font-size: 22px;">Enter your birth date:</p>
+            {{ form.birth_date }}
+            <p style="padding-top: 20px;">
+                <button type="button" class="btn btn-warning btn-lg" onclick="showMobileNumberInput()">Find My Star Sign</button>
+            </p>
+
+            <div id="message" style="color: red; display: none;"></div>
+
+            </div>
+            <!-- Place this where you want to show the star sign -->
+            <div id="star_sign_result" style="display: none;">
+                <h3>Your Star Sign: <span id="user_star_sign"></span></h3>
+                
+            </div>
+            <!-- Initially hidden form for mobile number submission -->
+            <div class="form-group" id="mobile_input" style="display:none;">
+                <div class="text-center mt-4">
+                    <h1 class="text-warning">Congratulations!</h1>
+                    <p class="lead">Your star sign is: <strong>{{ sign }}</strong></p>
+                    <p class="lead">You have received a gift: <strong>{{ gift }}</strong></p>
+                </div>
+                {{ form.mobile_number }}
+                <p style="padding-top: 20px;">
+                    <button type="submit" class="btn btn-warning btn-lg">Claim My Gift</button>
+                </p>
+                <div id="mobile_number_message" style="color: red; display: none;"></div>  
+            </div> 
+        </form>
+    </div>
+    <script>
+        function showMobileNumberInput() {
+            var birthDateInputSection = document.getElementById("birth_date_input");
+            var mobileInputSection = document.getElementById("mobile_input");
+            var birthDateInput = document.querySelector("#birth_date_input input");
+            var messageDiv = document.getElementById("message");
+            var starSignDiv = document.getElementById("star_sign_result");
+            var userStarSign = document.getElementById("user_star_sign");
+    
+            if (birthDateInput && birthDateInput.value) {
+                // Prepare data for AJAX request
+                var formData = new FormData();
+                formData.append('birth_date', birthDateInput.value);
+                formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+    
+                // AJAX request to server to get star sign
+                fetch("{% url 'find_star' %}", {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        userStarSign.textContent = data.star_sign;
+                        starSignDiv.style.display = 'block';
+                    } else {
+                        messageDiv.textContent = data.error;
+                        messageDiv.style.display = 'block';
+                    }
+                });
+    
+                // Hide the birth date input section and show the mobile number input section
+                birthDateInputSection.style.display = "none";
+                mobileInputSection.style.display = "block";
+                messageDiv.style.display = "none";
+            } else {
+                messageDiv.textContent = "Please enter your birth date.";
+                messageDiv.style.display = "block";
+            }
+        }
+    </script>
+    
+{% endblock %}
